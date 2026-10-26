@@ -84,9 +84,12 @@ mod tests {
         let pair = NativePtySystem::default()
             .openpty(PtySize::default())
             .unwrap();
-        let mut cmd = CommandBuilder::new("/usr/bin/locale");
+        let mut cmd = CommandBuilder::new("locale");
         cmd.arg("charmap");
         cmd.env_clear();
+        if let Some(path) = std::env::var_os("PATH") {
+            cmd.env("PATH", path);
+        }
         configure_terminal_environment(&mut cmd);
 
         let mut child = pair.slave.spawn_command(cmd).unwrap();
